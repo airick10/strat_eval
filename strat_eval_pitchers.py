@@ -56,10 +56,17 @@ def gatherPlayer(row):
 
 	# Appropriately assigning positions integers
 	values = row['FIELD'].split("-")
-	frange = int(values[0])
-	erating = int(values[1])
+	frange = values[0]
+	if len(values) >= 2:
+		erating = values[1].strip()
 
-	if int(row['SPD']) > 10:
+
+	if row['SPD'] and row['SPD'].isdigit():
+		spd_integer = int(row['SPD'])
+	else:
+		spd_integer = 0
+
+	if spd_integer > 10:
 		speed = True
 	else:
 		speed = False
@@ -87,8 +94,8 @@ def gatherPlayer(row):
             'hold': int(row['HO']),
             'endurance': endurance,
             'role': str(role),
-            'range': frange,
-            'erating': erating,
+            'range': int(frange),
+            'erating': int(erating),
             'speed': speed
         }
 	return player
@@ -181,7 +188,7 @@ def getRightPitching(player):
 
 
 def userInput(dialog, default):
-	value = input(f"What is your K/BB measurement? (Default {default})")
+	value = input(f"{dialog} {default}):  ")
 	if value == "":
 		return default
 	else:
@@ -190,14 +197,14 @@ def userInput(dialog, default):
 if __name__ == "__main__":
 	score_sheet = {}
 
-	filename = input(f"What is the CSV rile you want to use?  Needs to be in the same directory")
+	filename = userInput("What is the CSV rile you want to use?  Needs to be in the same directory (Default", "strat_pitchers.csv")
 
-	CONST_SOBB = userInput("What is your K - BB weight? (Default 0.8)", 0.8)
-	CONST_OBTB = userInput("What is your OB + TB weight? (Default 1.6)", 1.6)
-	CONST_HR = userInput("What is your HR weight? (Default 1.4)", 1.4)
-	CONST_BP = userInput("What is your Diamonds weight? (Default 1.4)", 1.4)
-	CONST_OPPOSIDE = userInput("What is your weight as hitter/pitcher opposite side? (Default .095)", .095)
-	CONST_SAMESIDE = userInput("What is your weight as hitter/pitcher same side? (Default 1.05)", 1.05)
+	CONST_SOBB = userInput("What is your K - BB weight? (Default", 0.8)
+	CONST_OBTB = userInput("What is your OB + TB weight? (Default", 1.6)
+	CONST_HR = userInput("What is your HR weight? (Default", 1.4)
+	CONST_BP = userInput("What is your Diamonds weight? (Default", 1.4)
+	CONST_OPPOSIDE = userInput("What is your weight as hitter/pitcher opposite side? (Default", .095)
+	CONST_SAMESIDE = userInput("What is your weight as hitter/pitcher same side? (Default", 1.05)
 
 	with open(filename, 'r') as filevar:
 	    reader = csv.DictReader(filevar, delimiter=',', quotechar='"')
@@ -215,11 +222,11 @@ if __name__ == "__main__":
 	    	score = round(score, 2)
 
 	    	string_score = (f"Score: {score} vsL: {left_pitching} vsR: {right_pitching} Field: {field_score} Hold: {hold_score} Endurance: {endurance_score} Speed: {speed_score}")
-	    	score_sheet[player['name']] = string_score
+	    	score_sheet[player['name']] = score
 
 	writevar = open('pitchers_output.csv', 'w', newline='')
 	writer = csv.writer(writevar)
-	score_sheet = dict(sorted(score_sheet.items(), key=lambda item: item[1]))
+	#score_sheet = dict(sorted(score_sheet.items(), key=lambda item: item[1]))
 	for key, value in score_sheet.items():
 		print(f'{key}: {value}')
 		row = [key, value]

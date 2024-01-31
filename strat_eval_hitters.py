@@ -264,7 +264,7 @@ def getRightHitting(player):
 	return round(right_hitting, 2)	
 
 def userInput(dialog, default):
-	value = input(f"What is your K/BB measurement? (Default {default})")
+	value = input(f"{dialog} {default}):  ")
 	if value == "":
 		return default
 	else:
@@ -273,38 +273,38 @@ def userInput(dialog, default):
 if __name__ == "__main__":
 	score_sheet = {}
 
-	filename = input(f"What is the CSV rile you want to use?  Needs to be in the same directory")
+	filename = userInput("What is the CSV rile you want to use?  Needs to be in the same directory (Default", "strat_hitters.csv")
 
-	CONST_SOBB = userInput("What is your K - BB weight? (Default 0.8)", 0.8)
-	CONST_OBTB = userInput("What is your OB + TB weight? (Default 1.6)", 1.6)
-	CONST_HR = userInput("What is your HR weight? (Default 1.4)", 1.4)
-	CONST_BP = userInput("What is your Diamonds weight? (Default 1.4)", 1.4)
-	CONST_OPPOSIDE = userInput("What is your weight as hitter/pitcher opposite side? (Default .095)", .095)
-	CONST_SAMESIDE = userInput("What is your weight as hitter/pitcher same side? (Default 1.05)", 1.05)
+	CONST_SOBB = userInput("What is your K - BB weight? (Default  ", 0.8)
+	CONST_OBTB = userInput("What is your OB + TB weight? (Default  ", 1.6)
+	CONST_HR = userInput("What is your HR weight? (Default  ", 1.4)
+	CONST_BP = userInput("What is your Diamonds weight? (Default  ", 1.4)
+	CONST_OPPOSIDE = userInput("What is your weight as hitter/pitcher opposite side? (Default  ", .095)
+	CONST_SAMESIDE = userInput("What is your weight as hitter/pitcher same side? (Default  ", 1.05)
 
 	with open(filename, 'r') as filevar:
 	    reader = csv.DictReader(filevar, delimiter=',', quotechar='"')
 	    for row in reader:
-	        player = gatherPlayer(row)
-	        if player['ab'] > 129:
-		        arm_score = getArm(player)
-		        field_score = getFielding(player)
-		        speed_score = getSpeed(player)
-		        left_hitting = getLeftHitting(player)
-		        right_hitting = getRightHitting(player)
+	    	player = gatherPlayer(row)
+	    	arm_score = getArm(player)
+	    	field_score = getFielding(player)
+	    	speed_score = getSpeed(player)
+	    	left_hitting = getLeftHitting(player)
+	    	right_hitting = getRightHitting(player)
 
-		        score = arm_score + field_score + left_hitting + (right_hitting * 1.2) + speed_score
-		        score = round(score, 2)
+	    	score = arm_score + field_score + left_hitting + (right_hitting * 1.2) + speed_score
+	    	score = round(score, 2)
 
-		        #string_score = (f"Score: {score}  vsL: {left_hitting}  vsR: {right_hitting}  Field: {field_score}  Arm: {arm_score}  Speed: {speed_score}")
+	    	#string_score = (f"Score: {score}  vsL: {left_hitting}  vsR: {right_hitting}  Field: {field_score}  Arm: {arm_score}  Speed: {speed_score}")
+	    	#score_sheet[player['name']] = string_score
+	    	score_sheet[player['name']] = score
 
-		        #score_sheet[player['name']] = string_score
-		        score_sheet[player['name']] = score
 	writevar = open('hitters_output.csv', 'w', newline='')
 	writer = csv.writer(writevar)
-	score_sheet = dict(sorted(score_sheet.items(), key=lambda item: item[1], reverse=True))
+	#score_sheet = dict(sorted(score_sheet.items(), key=lambda item: item[1], reverse=True))
 	for key, value in score_sheet.items():
 	    print(f'{key}: {value}')
 	    row = [key, value]
 	    writer.writerow(row)
+
 
