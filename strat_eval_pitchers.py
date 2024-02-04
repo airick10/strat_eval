@@ -2,7 +2,7 @@ import csv
 import re
 
 def gatherPlayer(row):
-	# Assigning Arm rating
+	# Assigning Endurance
 	if "S" in row['ENDURANCE'] and "R" in row['ENDURANCE']:
 		pattern = r'(\w+)\((\d+)\) (\w+)\((\d+)\)'
 		match = re.match(pattern, row['ENDURANCE'])
@@ -30,7 +30,7 @@ def gatherPlayer(row):
 
 
 
-    # Assigning bat side
+    # Assigning throw side
 	if "*" in row['PITCHERS']:
 		throw = "L"
 	else:
@@ -54,7 +54,7 @@ def gatherPlayer(row):
 		bpvr = row['BP v rhp']
 
 
-	# Appropriately assigning positions integers
+	# Appropriately defense integers
 	values = row['FIELD'].split("-")
 	frange = values[0]
 	if len(values) >= 2:
@@ -194,6 +194,8 @@ def userInput(dialog, default):
 	else:
 		return int(value)
 
+#-------------------------------------------------------------------
+
 if __name__ == "__main__":
 	score_sheet = {}
 
@@ -209,20 +211,21 @@ if __name__ == "__main__":
 	with open(filename, 'r') as filevar:
 	    reader = csv.DictReader(filevar, delimiter=',', quotechar='"')
 	    for row in reader:
-	    	player = gatherPlayer(row)
-	    	#if player['ip'] > 49:
-	    	endurance_score = getEndurance(player)
-	    	field_score = getFielding(player)
-	    	hold_score = getHold(player)
-	    	speed_score = getSpeed(player)
-	    	left_pitching = getLeftPitching(player)
-	    	right_pitching = getRightPitching(player)
+	    	if any(row.values()):
+		    	player = gatherPlayer(row)
+		    	#if player['ip'] > 49:
+		    	endurance_score = getEndurance(player)
+		    	field_score = getFielding(player)
+		    	hold_score = getHold(player)
+		    	speed_score = getSpeed(player)
+		    	left_pitching = getLeftPitching(player)
+		    	right_pitching = getRightPitching(player)
 
-	    	score = endurance_score + field_score + hold_score + left_pitching + (right_pitching * 1.2) + speed_score
-	    	score = round(score, 2)
+		    	score = endurance_score + field_score + hold_score + left_pitching + (right_pitching * 1.2) + speed_score
+		    	score = round(score, 2)
 
-	    	string_score = (f"Score: {score} vsL: {left_pitching} vsR: {right_pitching} Field: {field_score} Hold: {hold_score} Endurance: {endurance_score} Speed: {speed_score}")
-	    	score_sheet[player['name']] = score
+		    	string_score = (f"Score: {score} vsL: {left_pitching} vsR: {right_pitching} Field: {field_score} Hold: {hold_score} Endurance: {endurance_score} Speed: {speed_score}")
+		    	score_sheet[player['name']] = score
 
 	writevar = open('pitchers_output.csv', 'w', newline='')
 	writer = csv.writer(writevar)
